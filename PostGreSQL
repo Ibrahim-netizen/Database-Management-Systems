@@ -1,0 +1,90 @@
+#Customer: customer_id, first_name, Last name, email, Mobile number, Gender
+
+#Address: Address_id, Address, Address_2, Post code, City, Province, Country
+
+#Drop the relations in case they are already there.
+DROP TABLE IF EXISTS Customer_details;
+DROP TABLE IF EXISTS Address;
+
+#check limits the value a column/attribute to a specific range of values
+#Actual or Main table
+create table Customer_details(
+  Customer_id serial NOT NULL,
+  First_name VARCHAR(100) NOT NULL,
+  Last_name VARCHAR(100) NOT NULL,
+  Email VARCHAR(100) UNIQUE NOT NULL,
+  Mobile_number INT(11) UNIQUE,
+  Gender VARCHAR(20),
+  Primary key (Customer_id),
+  check(Gender in ('Male', 'Female', 'Prefer not to say')) 
+);
+
+#Related/secondary table
+create table Address(
+  Address_id serial NOT NULL,
+  Customer_id serial,
+  Address VARCHAR(90) NOT NULL,
+  Post_code VARCHAR(8),
+  City VARCHAR(50),
+  County VARCHAR,
+  Country VARCHAR,
+  Primary key(Address_id),
+  Constraint customer_fk
+     Foreign key(Customer_id)
+        References Customer_details(Customer_id)
+        ON DELETE SET NULL
+);
+
+Insert into Customer_details(First_name, Last_name, Email, Mobile_number, Gender)
+values('Heather','Wade','Heather.Wade@gmail.com','8718117955','Male'),
+('Daniel','Levick','Daniel.Levick@yahoo.com','8616176228','Female'),
+('Anwar','Mir','Anwar.Mir@hotmail.com','8511257580','Male'),
+('Ahmed','Mobashir','Ahmed.Mobashir@gmail.com','8516304680','Female'),
+('Zachary','Moore','Zachary.Moore@yahoo.com','8720407739','Male'),
+('Ahmed','Adbullah','Ahmed.Adbullah@hotmail.com','8789359980','Female'),
+('Yousef','Salman','Yousef.Salman@gmail.com','8529053667','Male'),
+('Weidong','Liu','Weidong.Liu@yahoo.com','8787277242','Female'),
+('Cameron','Jones','Cameron.Jones@hotmail.com','8690737600','Male'),
+('Joseph','Bowyer','Joseph.Bowyer@gmail.com','8594908791','Male'),
+('Robyn','Wilson','Robyn.Wilson@yahoo.com','8503689160','Female');
+
+
+Insert into Address(Address, Post_code, City, County, Country)
+values('84 High street','CW29 6FZ','Crewe,'Cheshire','United Kingdom'),
+('30 Kings Road','BN27 8MN','Brighton,'East Sussex','United Kingdom'),
+('43 Green Lane','BL39 1FZ','Bolton,'Greater Manchester','United Kingdom'),
+('75 Main Road','HD2 7GF','Huddersfield,'West Yorkshire','United Kingdom'),
+('66 York Road','CO8 1MX','Colchester,'East Essex','United Kingdom'),
+('11 Kingsway','NR14 4MS','Norwich,'Norfolk','United Kingdom'),
+('51 Church Road','PO77 2CN','Portsmouth,'Hampshire','United Kingdom'),
+('28 Alexander Road','PR0 5YB','Preston,'Lancashire','United Kingdom'),
+('17 The Grove','SM23 5FW','Sutton,'Greater London','United Kingdom'),
+('15 Manor Road','DL66 1QD','Darlington,'Durham','United Kingdom'),
+('92 Richmond Road','B51 2DF','Birmingham,'West Midlands','United Kingdom');
+
+
+#retrieve relational tables
+select * from Customer_details;
+select * from Address;
+
+#update customer's details
+update Customer_details
+set Email = 'Daniel.Hopkins@gmail.com', Mobile_number = '857574', Last_name = 'Hopkins'
+where Customer_id = 2;
+
+#delete row/tuple
+delete from Address where Post_code = 'DL66 1QD';
+
+#Recall related tables with table join 
+select Address.Address_id, Customer_details.Mobile_number, Address.Post_code
+from Address
+inner join Customer_details on Address.Customer_id = Customer_details.Customer_id;
+
+#Query database with index statements
+create unique index idx_Last_name
+on Customer_details (Last_name);
+
+#Aggregating columns using groub by, count and left join clauses
+select Customer_details.email, count(Address.Address_id) As NumberofAddress from Address
+left join Customer_details on Address.customer_id = Customer_details.customer_id
+Group by email;
