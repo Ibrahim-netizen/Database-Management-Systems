@@ -1,0 +1,52 @@
+#show dbs displays the available databases on Mongo
+>>show dbs
+
+#'use' clause is used to switch to/create a database 
+>> use products
+
+>> db
+products
+
+#create User
+>> db.createUser(user, writeConcern)
+e.g.
+> db.createUser({
+	user: "Ibrahim",
+	pwd: "1234",
+	roles:["readWrite", "dbAdmin"]	
+})
+#create collection as group of organized docs.
+>>db.createCollection('products');
+
+>> show collections
+
+#Populate the collection with field-value pairs
+>>>>db.products.insert([{item : "pants", color : "red", size: "42"}]);
+
+>>>>db.products.insert({item: "Banana", description: "fresh and big", price: "£1.20", type: {organic: ["ripe", "unripe"]}}) 
+
+db.products.insert({cereal: "cocoa pops", description: "Chocolate Flavour Toasted Rice", size: "720g", price: "£2.50", allergy: {protein: "meat", dairy: "milk", carbohydrate: "wheat"}});
+
+#Query
+# to retrieve data collection
+db.products.find().pretty()
+db.products.find().count()
+
+#to access nested/embedded docs 
+db.products.find({"allergy.dairy": "milk"})
+db.products.find({"allergy.dairy": "milk"}).pretty()
+
+#to query with filters
+db.products.find({organic: "ripe"})
+
+#to collate docs by sorting with size attribute
+db.products.find().sort({size: 1}).pretty()
+
+#return product name
+db.products.find().forEach(function(doc){print("product name" +doc.cereal)})
+
+#to update doc a new field-value pair/attribute
+db.products.updateOne({item: "Banana"}, {$set: {storage: "store in a cool and dry place"}})
+
+#delete one doc
+db.products.deleteOne({cereal: "cocoa pops"})
